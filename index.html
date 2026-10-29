@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hành Trình Trái Tim 💖</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Thư viện phụ trợ -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pastelPink: '#FFB6C1',
+                        pastelSoftPink: '#FFE4E1',
+                        pastelYellow: '#FFFACD',
+                        brandPink: '#FF6B8B',
+                    },
+                    fontFamily: {
+                        sans: ['Nunito', 'sans-serif'],
+                        heading: ['Comfortaa', 'cursive'],
+                    },
+                    animation: {
+                        'bounce-slow': 'bounce 2s infinite',
+                        'float': 'float 4s ease-in-out infinite',
+                        'wave': 'wave 1s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-15px)' },
+                        },
+                        wave: {
+                            '0%': { height: '8px' },
+                            '100%': { height: '32px' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #FFE4E1 0%, #FFFACD 100%);
+            min-height: 100vh;
+            /* Tối ưu cho mobile, chống scroll ngang */
+            overflow-x: hidden; 
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .heart-bg {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+            animation: floatUp 8s linear infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) rotate(0deg) scale(0.8); opacity: 0.6; }
+            100% { transform: translateY(-10vh) rotate(360deg) scale(1.2); opacity: 0; }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 182, 193, 0.6);
+            box-shadow: 0 15px 35px -5px rgba(255, 107, 139, 0.2);
+        }
+
+        .option-card.selected {
+            border-color: #FF6B8B;
+            background-color: #FFF0F3;
+            transform: scale(1.03);
+            box-shadow: 0 4px 15px rgba(255, 107, 139, 0.2);
+        }
+
+        /* Ẩn scrollbar cho đẹp trên mobile */
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+
+        .stage-container {
+            display: none;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        .stage-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .recording .wave-bar {
+            animation: wave 0.6s ease-in-out infinite alternate;
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-700 pb-16 relative">
+
+    <!-- Trái tim bay nền -->
+    <div id="bg-hearts" class="fixed inset-0 pointer-events-none z-0 overflow-hidden"></div>
+
+    <!-- Thanh tiến trình (Header) -->
+    <header class="sticky top-0 z-50 backdrop-blur-md bg-white/70 border-b border-pink-200 px-4 py-3 shadow-sm">
+        <div class="max-w-md mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl animate-bounce">🧸</span>
+                <span class="font-heading font-bold text-pink-600 text-sm">Trạm Yêu Thương</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="w-24 bg-pink-100 rounded-full h-2.5 overflow-hidden">
+                    <div id="progress-bar" class="bg-brandPink h-full w-[20%] transition-all duration-500 rounded-full"></div>
+                </div>
+                <span id="stage-text" class="text-xs font-bold text-pink-500">1/5</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content (Giới hạn độ rộng để giống App Mobile) -->
+    <main class="max-w-md mx-auto px-4 mt-6 relative z-10">
+
+        <!-- ================= TẦNG 1: LANDING PAGE ================= -->
+        <section id="stage-1" class="stage-container active glass-card rounded-3xl p-6 text-center">
+            <div class="relative inline-block mb-4 mt-2">
+                <div class="w-32 h-32 mx-auto rounded-full bg-white border-4 border-pink-300 shadow-md flex items-center justify-center text-6xl animate-float">
+                    🐱
+                </div>
+                <span class="absolute -bottom-2 -right-2 bg-yellow-300 w-10 h-10 flex items-center justify-center rounded-full shadow text-xl animate-spin-slow">✨</span>
+            </div>
+
+            <h1 class="font-heading font-bold text-2xl text-pink-600 mb-3">Hé lộ bí mật! 💌</h1>
+            
+            <div class="bg-pink-50 rounded-2xl p-4 border border-pink-200 mb-6 text-pink-700 font-semibold text-sm leading-relaxed shadow-inner min-h-[80px] flex items-center justify-center">
+                <span id="typewriter"></span><span class="animate-pulse">|</span>
+            </div>
+
+            <p class="text-xs text-gray-500 mb-6 px-2">
+                Hãy thành thật trả lời các câu hỏi để nhận "Tấm Vé Hẹn Hò Đặc Quyền" ở cuối đường nhé bé yêu! 🎁
+            </p>
+
+            <button onclick="nextStage(2)" class="w-full py-4 bg-brandPink text-white font-bold rounded-2xl shadow-lg hover:bg-pink-500 active:scale-95 transition flex items-center justify-center gap-2 text-lg animate-bounce-slow">
+                <span>Chấp Nhận Thử Thách</span>
+                <i class="fa-solid fa-heart text-yellow-300"></i>
+            </button>
+        </section>
+
+        <!-- ================= TẦNG 2: THẺ BÀI TEXT ================= -->
+        <section id="stage-2" class="stage-container glass-card rounded-3xl p-5">
+            <div class="flex items-center gap-3 mb-5 border-b border-pink-100 pb-3">
+                <div class="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center text-pink-600 font-bold text-lg">2</div>
+                <div>
+                    <h2 class="font-heading font-bold text-pink-600">Thẻ Bài Quá Khứ & Hiện Tại</h2>
+                    <p class="text-[11px] text-gray-500">Khởi động nhẹ nhàng bằng vài câu chữ nha...</p>
+                </div>
+            </div>
+
+            <div class="space-y-5">
+                <!-- Q1 -->
+                <div class="bg-white/70 p-4 rounded-2xl border border-pink-200">
+                    <label class="block font-bold text-pink-700 text-sm mb-2">1. Lần đầu tiếp xúc tớ, thành thật khai báo trong lòng cậu nghĩ gì? (Có thấy tớ chuẩn trai ngoan chưa?)</label>
+                    <textarea id="q1" rows="2" class="w-full p-3 rounded-xl border border-pink-200 focus:ring-2 focus:ring-brandPink text-sm outline-none" placeholder="Nhập câu trả lời..."></textarea>
+                </div>
+                <!-- Q2 -->
+                <div class="bg-white/70 p-4 rounded-2xl border border-pink-200">
+                    <label class="block font-bold text-pink-700 text-sm mb-2">2. Ký ức tuổi thơ nào ngớ ngẩn đến mức giờ nhớ lại vẫn tự bật cười?</label>
+                    <textarea id="q2" rows="2" class="w-full p-3 rounded-xl border border-pink-200 focus:ring-2 focus:ring-brandPink text-sm outline-none" placeholder="Kể tớ nghe..."></textarea>
+                </div>
+                <!-- Q3 -->
+                <div class="bg-white/70 p-4 rounded-2xl border border-pink-200">
+                    <label class="block font-bold text-pink-700 text-sm mb-2">3. Hồi nhỏ có nỗi sợ ngớ ngẩn nào mà lớn lên mới thấy buồn cười không?</label>
+                    <input type="text" id="q3" class="w-full p-3 rounded-xl border border-pink-200 focus:ring-2 focus:ring-brandPink text-sm outline-none" placeholder="Sợ ma gầm giường...">
+                </div>
+                <!-- Q4 (Option) -->
+                <div class="bg-white/70 p-4 rounded-2xl border border-pink-200">
+                    <label class="block font-bold text-pink-700 text-sm mb-2">4. Nếu cãi nhau, cậu thích tớ ôm trước hay xin lỗi trước?</label>
+                    <div class="grid grid-cols-1 gap-2">
+                        <div onclick="selectOpt('q4', 'Ôm trước tính sau', this)" class="option-card p-3 rounded-xl border border-pink-200 bg-pink-50/50 text-sm cursor-pointer transition text-center">🤗 Ôm chặt cứng trước đã!</div>
+                        <div onclick="selectOpt('q4', 'Xin lỗi trước', this)" class="option-card p-3 rounded-xl border border-pink-200 bg-pink-50/50 text-sm cursor-pointer transition text-center">🙏 Xin lỗi chân thành dịu dàng</div>
+                        <div onclick="selectOpt('q4', 'Mua đồ ăn', this)" class="option-card p-3 rounded-xl border border-pink-200 bg-pink-50/50 text-sm cursor-pointer transition text-center">🧋 Mua đồ ăn ngon sang năn nỉ</div>
+                    </div>
+                    <input type="hidden" id="q4">
+                </div>
+                <!-- Q5 (Option) -->
+                <div class="bg-white/70 p-4 rounded-2xl border border-pink-200">
+                    <label class="block font-bold text-pink-700 text-sm mb-2">5. Khi giận, cậu thuộc team nào?</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div onclick="selectOpt('q5', 'Cần tĩnh lặng', this)" class="option-card p-3 rounded-xl border border-pink-200 bg-pink-50/50 text-xs text-center cursor-pointer font-bold">🧘 Cần khoảng không tĩnh lặng</div>
+                        <div onclick="selectOpt('q5', 'Giải quyết ngay', this)" class="option-card p-3 rounded-xl border border-pink-200 bg-pink-50/50 text-xs text-center cursor-pointer font-bold">🔥 Phải giải quyết ngay lập tức</div>
+                    </div>
+                    <input type="hidden" id="q5">
+                </div>
+                <!-- Q6 (Option) -->
+                <div class="bg-white/70 p-4 rounded-2xl border border-pink-200">
+                    <label class="block font-bold text-pink-700 text-sm mb-2">6. Nếu quay lại ngày đầu yêu, cậu có muốn sửa gì không?</label>
+                    <div class="grid grid-cols-1 gap-2">
+                        <div onclick="selectOpt('q6', 'Sập bẫy tiếp', this)" class="option-card p-3 rounded-xl border border-pink-200 bg-pink-50/50 text-sm cursor-pointer transition text-center">🥰 Vẫn nguyện "sập bẫy" như cũ</div>
+                        <div onclick="selectOpt('q6', 'Kiêu hơn chút', this)" class="option-card p-3 rounded-xl border border-pink-200 bg-pink-50/50 text-sm cursor-pointer transition text-center">😏 Sẽ giả vờ kiêu hơn một chút!</div>
+                    </div>
+                    <input type="hidden" id="q6">
+                </div>
+
+                <div class="pt-4 flex gap-3">
+                    <button onclick="nextStage(1)" class="w-1/3 py-3 rounded-xl border-2 border-pink-200 text-pink-500 font-bold active:bg-pink-50">Lùi</button>
+                    <button onclick="nextStage(3)" class="w-2/3 py-3 bg-brandPink text-white font-bold rounded-xl shadow-md active:scale-95 transition flex items-center justify-center gap-2">
+                        Tiếp tục <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TẦNG 3: VOICE & RADIO ================= -->
+        <section id="stage-3" class="stage-container glass-card rounded-3xl p-5">
+            <div class="flex items-center gap-3 mb-5 border-b border-pink-100 pb-3">
+                <div class="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center text-pink-600 font-bold text-lg">3</div>
+                <div>
+                    <h2 class="font-heading font-bold text-pink-600">Trạm Radio Tâm Sự 🎙️</h2>
+                    <p class="text-[11px] text-gray-500">Thu âm giọng nói ngọt ngào của cậu nháa!</p>
+                </div>
+            </div>
+
+            <!-- UI Radio Nhún Nhảy -->
+            <div id="radio-ui" class="bg-pink-100 border border-pink-200 p-4 rounded-2xl flex items-center justify-between mb-6 shadow-inner">
+                <i class="fa-solid fa-radio text-3xl text-brandPink"></i>
+                <div class="flex items-end gap-1 h-8">
+                    <div class="wave-bar w-1.5 bg-pink-400 rounded-full h-2" style="animation-delay: 0.1s"></div>
+                    <div class="wave-bar w-1.5 bg-brandPink rounded-full h-4" style="animation-delay: 0.2s"></div>
+                    <div class="wave-bar w-1.5 bg-purple-400 rounded-full h-6" style="animation-delay: 0.3s"></div>
+                    <div class="wave-bar w-1.5 bg-brandPink rounded-full h-3" style="animation-delay: 0.15s"></div>
+                    <div class="wave-bar w-1.5 bg-pink-400 rounded-full h-5" style="animation-delay: 0.25s"></div>
+                </div>
+                <span class="text-[10px] font-bold text-pink-600 bg-white px-2 py-1 rounded-full shadow-sm">FM LOVE</span>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Helper Render Voice Questions -->
+                <script>
+                    const voiceQs = [
+                        {id: 'vq1', label: '7. Nếu tớ có 1 ngày rảnh làm "oshin" phục vụ cậu, cậu sẽ bắt tớ làm gì?'},
+                        {id: 'vq2', label: '8. Có biểu cảm đáng yêu nào của tớ mà cậu thích nhưng tớ không biết?'},
+                        {id: 'vq3', label: '9. Lúc tớ ghen nhìn buồn cười lắm đúng không, cậu muốn tớ làm gì lúc đó?'},
+                        {id: 'vq4', label: '10. Nếu được chọn 1 siêu năng lực "trừng phạt" tớ khi giận, cậu chọn gì?'},
+                        {id: 'vq5', label: '11. Bí mật thầm kín về sở thích của cậu mà tớ chưa biết?'},
+                        {id: 'vq6', label: '12. Thói quen khó đỡ nào của tớ mà cậu đang phải cam chịu?'}
+                    ];
+                    
+                    voiceQs.forEach(q => {
+                        document.write(`
+                            <div class="bg-white/70 p-4 rounded-2xl border border-pink-200">
+                                <label class="block font-bold text-pink-700 text-sm mb-3">${q.label}</label>
+                                <div class="flex flex-col gap-3">
+                                    <div class="flex items-center gap-2">
+                                        <button type="button" id="btn-rec-${q.id}" onclick="toggleRecord('${q.id}')" class="flex-1 py-2.5 bg-pink-100 text-brandPink font-bold text-sm rounded-xl border border-pink-300 active:scale-95 transition flex justify-center items-center gap-2">
+                                            <i class="fa-solid fa-microphone"></i> Bấm Thu Âm
+                                        </button>
+                                        <audio id="audio-${q.id}" controls class="hidden w-[140px] h-[40px]"></audio>
+                                    </div>
+                                    <textarea id="${q.id}_text" rows="1" class="w-full p-2 rounded-xl border border-pink-200 text-xs outline-none focus:ring-1 focus:ring-brandPink" placeholder="Hoặc gõ chữ nếu Cậu ngại thu âm..."></textarea>
+                                </div>
+                            </div>
+                        `);
+                    });
+                </script>
+
+                <div class="pt-4 flex gap-3">
+                    <button onclick="nextStage(2)" class="w-1/3 py-3 rounded-xl border-2 border-pink-200 text-pink-500 font-bold active:bg-pink-50">Lùi</button>
+                    <button onclick="nextStage(4)" class="w-2/3 py-3 bg-brandPink text-white font-bold rounded-xl shadow-md active:scale-95 transition flex items-center justify-center gap-2">
+                        Sang Tầng 4 <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TẦNG 4: HẸN HÒ & MONG ƯỚC ================= -->
+        <section id="stage-4" class="stage-container glass-card rounded-3xl p-5">
+            <div class="flex items-center gap-3 mb-5 border-b border-pink-100 pb-3">
+                <div class="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center text-pink-600 font-bold text-lg">4</div>
+                <div>
+                    <h2 class="font-heading font-bold text-pink-600">Vòng Quay Hẹn Hò 🎡</h2>
+                    <p class="text-[11px] text-gray-500">Chốt kèo cho những chuyến đi sắp tới!</p>
+                </div>
+            </div>
+
+            <div class="space-y-5">
+                <div class="bg-white/70 p-4 rounded-2xl border border-pink-200">
+                    <label class="block font-bold text-pink-700 text-sm mb-2">13. Giữa Rừng núi và Biển, cậu chọn đi đâu? (Tớ lái xe!)</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div onclick="selectOpt('q13', 'Rừng núi', this)" class="option-card p-3 rounded-xl border border-pink-200 bg-pink-50/50 text-xs text-center cursor-pointer font-bold">🌲 Rừng núi</div>
+                        <div onclick="selectOpt('q13', 'Biển', this)" class="option-card p-3 rounded-xl border border-pink-200 bg-pink-50/50 text-xs text-center cursor-pointer font-bold">🌊 Biển bình minh</div>
+                    </div>
+                    <input type="hidden" id="q13">
+                </div>
+
+                <div class="bg-white/70 p-4 rounded-2xl border border-pink-200">
+                    <label class="block font-bold text-pink-700 text-sm mb-2">14. Thích nhận quà bất ngờ hay cùng đi chọn?</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div onclick="selectOpt('q14', 'Quà bất ngờ', this)" class="option-card p-2 rounded-xl border border-pink-200 bg-pink-50/50 text-xs text-center cursor-pointer font-bold">🎁 Quà bất ngờ</div>
+                        <div onclick="selectOpt('q14', 'Cùng đi chọn', this)" class="option-card p-2 rounded-xl border border-pink-200 bg-pink-50/50 text-xs text-center cursor-pointer font-bold">🛍️ Cùng đi chọn</div>
+                    </div>
+                    <input type="hidden" id="q14">
+                </div>
+
+                <div class="bg-white/70 p-4 rounded-2xl border border-pink-200">
+                    <label class="block font-bold text-pink-700 text-sm mb-2">15. Cuối tuần lý tưởng là ở nhà cuộn tròn xem phim hay ra đường phố?</label>
+                    <input type="text" id="q15" class="w-full p-3 rounded-xl border border-pink-200 focus:ring-2 focus:ring-brandPink text-sm outline-none" placeholder="Lựa chọn của em...">
+                </div>
+
+                <div class="bg-white/70 p-4 rounded-2xl border border-pink-200">
+                    <label class="block font-bold text-pink-700 text-sm mb-2">16. Món ăn hoài không chán & món cho tiền không đụng?</label>
+                    <input type="text" id="q16" class="w-full p-3 rounded-xl border border-pink-200 focus:ring-2 focus:ring-brandPink text-sm outline-none" placeholder="Nghiện: ... | Tránh xa: ...">
+                </div>
+
+                <div class="bg-white/70 p-4 rounded-2xl border border-pink-200">
+                    <label class="block font-bold text-pink-700 text-sm mb-2">17. Đã lén viết nhật ký hay nói xấu tớ với cạ cứng chưa?</label>
+                    <input type="text" id="q17" class="w-full p-3 rounded-xl border border-pink-200 focus:ring-2 focus:ring-brandPink text-sm outline-none" placeholder="Khai thật đi...">
+                </div>
+
+                <div class="bg-white/70 p-4 rounded-2xl border border-pink-200">
+                    <label class="block font-bold text-pink-700 text-sm mb-2">18. Ngoại trừ tớ, loài động vật nào làm cậu phát cuồng?</label>
+                    <input type="text" id="q18" class="w-full p-3 rounded-xl border border-pink-200 focus:ring-2 focus:ring-brandPink text-sm outline-none" placeholder="Chó, mèo, thỏ...">
+                </div>
+
+                <div class="bg-white/70 p-4 rounded-2xl border border-pink-200">
+                    <label class="block font-bold text-pink-700 text-sm mb-2">19. Món tự tin nấu nhất để chinh phục dạ dày tớ?</label>
+                    <input type="text" id="q19" class="w-full p-3 rounded-xl border border-pink-200 focus:ring-2 focus:ring-brandPink text-sm outline-none" placeholder="Trổ tài nào...">
+                </div>
+
+                <div class="bg-white/70 p-4 rounded-2xl border border-pink-200 shadow-md border-brandPink/50">
+                    <label class="block font-bold text-brandPink text-sm mb-2">20. Chốt lại: 3 từ miêu tả người yêu của em? 🥰</label>
+                    <input type="text" id="q20" class="w-full p-3 rounded-xl border border-brandPink bg-pink-50 focus:ring-2 focus:ring-brandPink text-sm outline-none font-bold text-pink-700" placeholder="VD: Đẹp trai, tâm lý...">
+                </div>
+
+                <div class="pt-4 flex gap-3">
+                    <button onclick="nextStage(3)" class="w-1/3 py-3 rounded-xl border-2 border-pink-200 text-pink-500 font-bold active:bg-pink-50">Lùi</button>
+                    <button onclick="finishSurvey()" class="w-2/3 py-3 bg-gradient-to-r from-pink-400 to-brandPink text-white font-bold rounded-xl shadow-md active:scale-95 transition flex items-center justify-center gap-2">
+                        Hoàn Thành 🎁
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TẦNG 5: TỔNG KẾT & FIREBASE ================= -->
+        <section id="stage-5" class="stage-container glass-card rounded-3xl p-5 text-center">
+            <div class="mb-4">
+                <i class="fa-solid fa-envelope-open-heart text-5xl text-brandPink animate-bounce"></i>
+            </div>
+            <h2 class="font-heading font-bold text-xl text-pink-600 mb-1">Chứng Nhận Tình Yêu ✨</h2>
+            <p class="text-[12px] text-gray-500 mb-5">Anh đã chuẩn bị sẵn phần quà cho em rồi nè!</p>
+
+            <!-- Voucher để tải về -->
+            <div id="voucher-card" class="bg-gradient-to-br from-pink-100 to-purple-100 border-2 border-dashed border-brandPink rounded-2xl p-4 shadow-lg mb-6 text-left relative overflow-hidden">
+                <div class="absolute -top-4 -right-4 w-16 h-16 bg-white/40 rounded-full"></div>
+                <div class="flex justify-between items-center border-b border-pink-200 pb-2 mb-3">
+                    <div>
+                        <p class="text-[9px] font-bold uppercase tracking-widest text-pink-500">Dating Pass VIP</p>
+                        <h3 class="font-heading font-bold text-pink-700">TẤM VÉ ĐẶC QUYỀN</h3>
+                    </div>
+                    <i class="fa-solid fa-ticket text-2xl text-brandPink"></i>
+                </div>
+                <div class="space-y-1.5 text-xs text-gray-700">
+                    <p><span class="font-bold text-pink-600">Dành cho:</span> Công Chúa Của Anh 👑</p>
+                    <p><span class="font-bold text-pink-600">Đặc quyền:</span> 1 Chầu Trà Sữa Tự Chọn + 1 Chuyến đi <span id="v-dest" class="font-bold">...</span></p>
+                    <p><span class="font-bold text-pink-600">Lý do:</span> Vì em thấy anh "<span id="v-words" class="italic text-pink-800">...</span>"</p>
+                </div>
+                <div class="mt-3 bg-white/60 text-center py-1.5 rounded-lg text-[10px] text-pink-600 italic font-bold">
+                    *Không giới hạn số lần đòi ôm*
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <button onclick="downloadVoucher()" class="w-full py-3 bg-purple-100 text-purple-600 border border-purple-300 font-bold rounded-xl active:scale-95 transition flex justify-center items-center gap-2 text-sm">
+                    <i class="fa-solid fa-download"></i> Tải Tấm Vé Này Về Máy
+                </button>
+                
+                <button id="btn-submit-tele" onclick="submitToTelegram()" class="w-full py-3.5 bg-gradient-to-r from-pink-500 to-brandPink text-white font-bold rounded-xl shadow-lg active:scale-95 transition flex justify-center items-center gap-2 text-sm">
+                    <i class="fa-solid fa-paper-plane"></i> Gửi Đáp Án Cho Anh Nhé 💖
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Overlay Loading Firebase -->
+    <div id="loading-overlay" class="fixed inset-0 bg-white/80 backdrop-blur-sm z-[100] hidden flex-col items-center justify-center">
+        <div class="w-16 h-16 border-4 border-pink-200 border-t-brandPink rounded-full animate-spin mb-4"></div>
+        <p id="loading-text" class="font-bold text-pink-600 animate-pulse">Đang đóng gói tình yêu gửi đi...</p>
+    </div>
+
+    <!-- Alert Modal -->
+    <div id="alert-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[110] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-xs text-center shadow-2xl scale-95 transition-transform" id="alert-box">
+            <div id="alert-icon" class="text-4xl mb-3">💖</div>
+            <h3 id="alert-title" class="font-heading font-bold text-lg text-pink-600 mb-2">Thông báo</h3>
+            <p id="alert-msg" class="text-sm text-gray-600 mb-5">Nội dung</p>
+            <button onclick="closeAlert()" class="w-full py-2.5 bg-brandPink text-white font-bold rounded-xl">Oki Anh 💕</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Imports & Logic -->
+    <script>
+    // Điền thông tin Bot Telegram của bạn vào đây
+        const TELEGRAM_BOT_TOKEN = '9244938040:AAGqI8B_wwGNtQoVG-4k4AjpodpsLionFtU';
+        const TELEGRAM_CHAT_ID = '7230705917';
+
+        window.submitToTelegram = async function() {
+            const btn = document.getElementById('btn-submit-tele');
+            const overlay = document.getElementById('loading-overlay');
+            const loadText = document.getElementById('loading-text');
+
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+            loadText.innerText = "Đang gửi tín hiệu tình yêu qua Telegram...";
+
+            try {
+            // 1. Gom toàn bộ đáp án chữ thành một tin nhắn
+                let message = "💌 BÁO CÁO KHẢO SÁT TỪ VY 💌\n\n";
+            
+                for(let i = 1; i <= 6; i++) {
+                    const ans = document.getElementById(`q${i}`)?.value;
+                    if(ans) message += `📝 Q${i}: ${ans}\n`;
+                }
+                for(let i = 13; i <= 20; i++) {
+                    const ans = document.getElementById(`q${i}`)?.value;
+                    if(ans) message += `📝 Q${i}: ${ans}\n`;
+                }
+            
+                ['vq1','vq2','vq3','vq4','vq5','vq6'].forEach((id, index) => {
+                    const ans = document.getElementById(`${id}_text`)?.value;
+                    if(ans) message += `🎧 Voice Q${index+7} (Gõ chữ): ${ans}\n`;
+                });
+
+            // 2. Gửi Text qua API sendMessage
+                await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: message
+                    })
+                });
+
+            // 3. Gửi Voice qua API sendDocument (để hỗ trợ tốt nhất định dạng WebM của trình duyệt)
+                loadText.innerText = "Đang truyền tải giọng nói ngọt ngào...";
+                for (const [qId, blob] of Object.entries(window.recordedBlobs)) {
+                    if (blob) {
+                        const formData = new FormData();
+                        formData.append('chat_id', TELEGRAM_CHAT_ID);
+                        formData.append('document', blob, `voice_${qId}.webm`);
+                        formData.append('caption', `🎤 File ghi âm cho câu: ${qId}`);
+
+                        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                    }
+                }
+
+            // 4. Hoàn tất & Hiển thị thành công
+                overlay.classList.remove('flex');
+                overlay.classList.add('hidden');
+            
+                btn.innerHTML = `<i class="fa-solid fa-check"></i> Đã Gửi Thành Công!`;
+                btn.classList.replace('from-pink-500', 'from-green-400');
+                btn.classList.replace('to-brandPink', 'to-green-500');
+                btn.disabled = true;
+
+                confetti({particleCount: 200, spread: 100, origin: {y:0.6}, colors: ['#FFB6C1', '#FF6B8B', '#FFE4E1']});
+                showAlert("Gửi Thành Công! 🎉", "Anh đã nhận được tất cả câu trả lời và giọng nói đáng yêu của em rồi! Yêu em bé siêu nhiềuuuu 💖", "💌");
+
+            } catch (error) {
+                console.error("Telegram Error:", error);
+                overlay.classList.remove('flex');
+                overlay.classList.add('hidden');
+                showAlert("Lỗi Nhỏ 🥺", "Đường truyền tình yêu đang tắc nghẽn, em thử bấm gửi lại nha!", "🔧");
+            }
+        };
+    </script>
+
+    <!-- UI Interaction Scripts -->
+    <script>
+        // Floating Background Hearts
+        function spawnHearts() {
+            const container = document.getElementById('bg-hearts');
+            const symbols = ['💖', '🌸', '✨', '🧸'];
+            for(let i=0; i<12; i++) {
+                const el = document.createElement('div');
+                el.className = 'heart-bg text-xl absolute';
+                el.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                el.style.left = Math.random() * 100 + 'vw';
+                el.style.animationDuration = (Math.random() * 5 + 6) + 's';
+                el.style.animationDelay = (Math.random() * 4) + 's';
+                container.appendChild(el);
+            }
+        }
+        spawnHearts();
+
+        // Typewriter Effect Stage 1
+        const txt = "Bạn đang bước vào không gian tra khảo đáng yêu nhất vũ trụ dành riêng cho em bé! 💕";
+        let i = 0;
+        function typeWriter() {
+            if (i < txt.length) {
+                document.getElementById("typewriter").innerHTML += txt.charAt(i);
+                i++;
+                setTimeout(typeWriter, 40);
+            }
+        }
+        setTimeout(typeWriter, 500);
+
+        // Stage Navigation
+        let currentStage = 1;
+        function nextStage(stage) {
+            document.getElementById(`stage-${currentStage}`).classList.remove('active');
+            currentStage = stage;
+            document.getElementById(`stage-${currentStage}`).classList.add('active');
+            
+            // Update Progress
+            const progress = (currentStage / 5) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            document.getElementById('stage-text').innerText = `${currentStage}/5`;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Option Selection
+        function selectOpt(inputId, val, el) {
+            document.getElementById(inputId).value = val;
+            const siblings = el.parentElement.querySelectorAll('.option-card');
+            siblings.forEach(s => s.classList.remove('selected'));
+            el.classList.add('selected');
+            confetti({particleCount: 30, spread: 40, origin: {y: 0.8}, colors: ['#FFB6C1']});
+        }
+
+        // --- Voice Recording Logic ---
+        window.recordedBlobs = {};
+        let activeRecorder = null;
+        let activeAudioChunks = [];
+        let activeQid = null;
+
+        async function toggleRecord(qId) {
+            const btn = document.getElementById(`btn-rec-${qId}`);
+            const radioUI = document.getElementById('radio-ui');
+            const audioEl = document.getElementById(`audio-${qId}`);
+
+            // Stop recording if currently recording this question
+            if (activeRecorder && activeQid === qId) {
+                activeRecorder.stop();
+                return;
+            }
+
+            // Stop other active recordings
+            if (activeRecorder) {
+                activeRecorder.stop();
+            }
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                activeRecorder = new MediaRecorder(stream);
+                activeQid = qId;
+                activeAudioChunks = [];
+
+                activeRecorder.ondataavailable = e => {
+                    if (e.data.size > 0) activeAudioChunks.push(e.data);
+                };
+
+                activeRecorder.onstop = () => {
+                    // Update UI
+                    btn.innerHTML = `<i class="fa-solid fa-rotate-right"></i> Thu Lại`;
+                    btn.classList.replace('bg-red-100', 'bg-pink-100');
+                    btn.classList.replace('text-red-500', 'text-brandPink');
+                    radioUI.classList.remove('recording');
+
+                    // Create Blob
+                    const blob = new Blob(activeAudioChunks, { type: 'audio/webm' });
+                    window.recordedBlobs[qId] = blob;
+
+                    // Setup Audio Player
+                    audioEl.src = URL.createObjectURL(blob);
+                    audioEl.classList.remove('hidden');
+                    btn.classList.replace('flex-1', 'w-1/3'); // Shrink button to fit player
+
+                    // Cleanup Stream
+                    stream.getTracks().forEach(track => track.stop());
+                    activeRecorder = null;
+                    activeQid = null;
+                };
+
+                // Start UI
+                btn.innerHTML = `<i class="fa-solid fa-stop animate-pulse"></i> Đang Thu...`;
+                btn.classList.replace('bg-pink-100', 'bg-red-100');
+                btn.classList.replace('text-brandPink', 'text-red-500');
+                radioUI.classList.add('recording');
+                audioEl.classList.add('hidden');
+                btn.classList.replace('w-1/3', 'flex-1');
+                
+                activeRecorder.start();
+
+            } catch (err) {
+                console.error("Mic access error", err);
+                showAlert("Không tìm thấy Micro 🎙️", "Trình duyệt không cho phép ghi âm hoặc em chưa cấp quyền Micro nha!", "🥺");
+            }
+        }
+
+        // Finish Survey - Prepare Voucher
+        function finishSurvey() {
+            const dest = document.getElementById('q13').value || "Một nụ hôn gió xuyên khônggg gian nháaa";
+            const words = document.getElementById('q20').value || "Người yêu em tuyệt nhất";
+            
+            document.getElementById('v-dest').innerText = dest;
+            document.getElementById('v-words').innerText = words;
+
+            confetti({particleCount: 100, spread: 70, origin: {y:0.6}, colors: ['#FFB6C1', '#FF6B8B', '#E84393']});
+            nextStage(5);
+        }
+
+        // Custom Alerts
+        function showAlert(title, msg, icon) {
+            document.getElementById('alert-title').innerText = title;
+            document.getElementById('alert-msg').innerText = msg;
+            document.getElementById('alert-icon').innerText = icon;
+            const modal = document.getElementById('alert-modal');
+            modal.classList.remove('hidden');
+            setTimeout(() => document.getElementById('alert-box').classList.replace('scale-95', 'scale-100'), 10);
+        }
+
+        function closeAlert() {
+            document.getElementById('alert-box').classList.replace('scale-100', 'scale-95');
+            setTimeout(() => document.getElementById('alert-modal').classList.add('hidden'), 150);
+        }
+
+        // Download Voucher
+        function downloadVoucher() {
+            const card = document.getElementById('voucher-card');
+            // Scale up for better quality on mobile
+            html2canvas(card, { scale: 3, backgroundColor: null }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'Ve-Hen-Ho-Dac-Quyen.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
